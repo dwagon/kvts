@@ -1,6 +1,7 @@
 """ Timesheet views """
 from django.shortcuts import render
 from .models import Person, Day, Interval
+from .forms import NormalHoursForm
 
 
 def index(request):
@@ -23,7 +24,17 @@ def personday_view(request, person_id, day_id):
     interval_list = Interval.objects.filter(day=day_id).order_by('day')
     person = Person.objects.get(pk=person_id)
     day = Day.objects.get(pk=day_id)
-    context = {'person': person, 'day': day, 'intervals': interval_list}
+
+    if request.method == 'POST':
+        form = NormalHoursForm(request.POST)
+        if form.is_valid():
+            hours = form.cleaned_data['norm']
+            day.normal_quarterhours = hours * 4
+            day.save()
+    else:
+        form = NormalHoursForm(initial={'norm': day.normal_quarterhours / 4})
+
+    context = {'person': person, 'day': day, 'intervals': interval_list, 'form': form}
     return render(request, 'personday.template', context)
 
 # EOF

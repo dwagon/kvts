@@ -1,5 +1,9 @@
 <h1> Times for {{person}} on {{day}} </h1>
-<ul>
+<form action="{% url 'personday' person.id day.id %}" method="POST">
+{% csrf_token %}
+{{ form }}
+<input type="submit" value="Change">
+</form>
 <table border=1>
 <tr><th>Hours</th><th>Work Type</th></tr>
 {% for intr in intervals %}
@@ -7,4 +11,3 @@
 {% endfor %}
 <tr><th>Total</th><td>{{day.total}}</td></tr>
 </table>
-</ul>
