@@ -20,15 +20,33 @@ class Day(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return str(self.day)
+        return f"{self.person} @ {self.day}"
 
-    def total(self):
-        """ Calculate total hours today """
+    def all_hours(self, typ_='N'):
+        """ Calculate all hours allocated today """
         tots = 0
-        ivals = Interval.objects.filter(day=self)
+        ivals = Interval.objects.filter(day=self)   # pylint: disable=no-member
+        if typ_:
+            ivals = ivals.filter(worktype=typ_)
         for iv in ivals:
             tots += iv.quarterhours
-        return tots/4
+        return tots
+
+    def overtime(self):
+        """ Number of quarter hours at 1.5 (Max 3 hours) """
+        return min(12, self.all_hours() - self.normal_quarterhours)
+
+    def doubletime(self):
+        """ Number of quarter hours at 2.0 (Max 3 hours) """
+        return self.all_hours() - self.normal_quarterhours - self.overtime()
+
+    def normal(self):
+        """ Return quarterhours at normal pay rate """
+        return min(self.all_hours(), self.normal_quarterhours)
+
+    def total(self):
+        """ Return the equivalent hours to be paid """
+        return self.normal() + 1.5 * self.overtime() + 2.0 * self.doubletime()
 
 
 ##############################################################################
@@ -36,7 +54,7 @@ class Interval(models.Model):
     """ Work Interval """
     class IntervalChoices(models.TextChoices):
         """ Types of Work Interval """
-        NORMAL = 'N', _('Normal')
+        NORMAL = 'N', _('Working')
         SICK = 'S', _('Sick Leave')
         LEAVE = 'L', _('Paid Leave')
         PUBLIC_HOLIDAY = 'P', _('Public Holiday')
@@ -51,7 +69,7 @@ class Interval(models.Model):
 
     def work(self):
         """ Return work type in human """
-        return self.get_worktype_display()
+        return self.get_worktype_display()  # pylint: disable=no-member
 
     def __str__(self):
         return f"{self.quarterhours/4} hours of {self.work()} on {self.day}"
@@ -59,5 +77,6 @@ class Interval(models.Model):
     def hours(self):
         """ Return quarterhours in human """
         return self.quarterhours / 4.0
+
 
 # EOF

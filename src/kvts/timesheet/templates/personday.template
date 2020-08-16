@@ -1,4 +1,7 @@
+<html>
+<body>
 <h1> Times for {{person}} on {{day}} </h1>
+{% load hours %}
 <form action="{% url 'personday' person.id day.id %}" method="POST">
 {% csrf_token %}
 {{ form }}
@@ -7,7 +10,18 @@
 <table border=1>
 <tr><th>Hours</th><th>Work Type</th></tr>
 {% for intr in intervals %}
-<tr><td>{{intr.work}}</td><td>{{intr.hours}}</td></tr>
+<tr><td>{{intr.work}}</td><td>{{intr.quarterhours|hours}}</td></tr>
 {% endfor %}
-<tr><th>Total</th><td>{{day.total}}</td></tr>
+<tr><th>Total</th><td>{{day.all_hours|hours}}</td></tr>
 </table>
+<hr>
+<table border=1>
+<tr><th>Normal</th><th>Overtime</th><th>Doubletime</th><th>Total</th></tr>
+<tr>
+    <td>{{day.normal|hours}}</td>
+    <td>{{day.overtime|hours}}</td>
+    <td>{{day.doubletime|hours}}</td>
+    <td>{{day.total|hours}}</td>
+</table>
+</body>
+</html>
