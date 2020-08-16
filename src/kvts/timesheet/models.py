@@ -16,7 +16,7 @@ class Person(models.Model):
 class Day(models.Model):
     """ A Day """
     day = models.DateField()
-    normal_quarterhours = models.IntegerField()
+    normal_quarterhours = models.PositiveIntegerField()
     person = models.ForeignKey(Person, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
@@ -42,7 +42,7 @@ class Interval(models.Model):
         PUBLIC_HOLIDAY = 'P', _('Public Holiday')
         STUDY = 'Z', _('Sudy Leave')
     day = models.ForeignKey(Day, on_delete=models.CASCADE)
-    quarterhours = models.IntegerField()
+    quarterhours = models.PositiveIntegerField()
     worktype = models.CharField(
         max_length=1,
         choices=IntervalChoices.choices,
