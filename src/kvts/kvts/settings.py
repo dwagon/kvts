@@ -34,6 +34,7 @@ INTERNAL_IPS = [
 # Application definition
 INSTALLED_APPS = [
     'timesheet',
+    'bootstrap4',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

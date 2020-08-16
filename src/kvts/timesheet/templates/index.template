@@ -1,5 +1,11 @@
-<ul>
+{% extends "base.html" %}
+{% block content %}
+<h1>Timesheets</h1>
+<div class="container">
+  <div class="list-group">
 {% for person in people %}
-<li> <a href="{% url 'person' person.id %}">{{person.name}}</a>
+<a class="list-group-item list-group-item-action" href="{% url 'person' person.id %}">{{person.name}}</a>
 {% endfor %}
-</ul>
+  </div>
+</div>
+{% endblock %}

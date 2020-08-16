@@ -1,6 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
 <h1> Days for {{person}} </h1>
-<ul>
+
+<a href="{% url 'newday' person.id %}">Add Date</a>
+<div class="container">
+  <div class="list-group">
 {% for day in days %}
-<li> <a href="{% url 'personday' person.id day.id %}">{{day.weekday}} {{day.day}}</a>
+<a class="list-group-item list-group-item-action" href="{% url 'personday' person.id day.id %}">{{day.weekday}} {{day.day}}</a>
 {% endfor %}
-</ul>
+</div>
+</div>
+{% endblock %}
