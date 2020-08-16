@@ -1,0 +1,9 @@
+<h1> Times for {{person}} on {{day}} </h1>
+<ul>
+<table border=1>
+<tr><th>Hours</th><th>Work Type</th></tr>
+{% for intr in intervals %}
+<tr><td>{{intr.hours}}</td><td>{{intr.get_worktype_display}}</td></tr>
+{% endfor %}
+</table>
+</ul>
