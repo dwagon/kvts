@@ -17,10 +17,18 @@ class Day(models.Model):
     """ A Day """
     day = models.DateField()
     normal_quarterhours = models.IntegerField()
-    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return str(self.day)
+
+    def total(self):
+        """ Calculate total hours today """
+        tots = 0
+        ivals = Interval.objects.filter(day=self)
+        for iv in ivals:
+            tots += iv.quarterhours
+        return tots/4
 
 
 ##############################################################################
@@ -41,8 +49,12 @@ class Interval(models.Model):
         default=IntervalChoices.NORMAL
     )
 
+    def work(self):
+        """ Return work type in human """
+        return self.get_worktype_display()
+
     def __str__(self):
-        return f"{self.quarterhours/4} hours of {self.get_worktype_display()} on {self.day}"
+        return f"{self.quarterhours/4} hours of {self.work()} on {self.day}"
 
     def hours(self):
         """ Return quarterhours in human """
