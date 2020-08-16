@@ -1,4 +1,5 @@
 """ Model definition for KVTS """
+from decimal import Decimal
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -46,7 +47,7 @@ class Day(models.Model):
 
     def total(self):
         """ Return the equivalent hours to be paid """
-        return self.normal() + 1.5 * self.overtime() + 2.0 * self.doubletime()
+        return self.normal() + Decimal(1.5) * self.overtime() + Decimal(2.0) * self.doubletime()
 
     def weekday(self):
         """ Return day of the week """
