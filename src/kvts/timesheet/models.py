@@ -48,6 +48,10 @@ class Day(models.Model):
         """ Return the equivalent hours to be paid """
         return self.normal() + 1.5 * self.overtime() + 2.0 * self.doubletime()
 
+    def weekday(self):
+        """ Return day of the week """
+        return self.day.strftime("%a")  # pylint: disable=no-member
+
 
 ##############################################################################
 class Interval(models.Model):
