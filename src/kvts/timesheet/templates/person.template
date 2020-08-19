@@ -1,13 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
+{% load hours %}
 <h1> Days for {{person}} </h1>
 
 <a href="{% url 'newday' person.id %}">Add Date</a>
 <div class="container">
-  <div class="list-group">
+<table class="table table-hover">
+<tr>
+    <th>Date</th>
+    <th>Worked</th>
+    <th>Normal Rate</th>
+    <th>Overtime</th>
+    <th>Doubletime</th>
+    <th>Total</th>
+</tr>
 {% for day in days %}
-<a class="list-group-item list-group-item-action" href="{% url 'personday' person.id day.id %}">{{day.weekday}} {{day.day}}</a>
+<tr>
+<td><a href="{% url 'personday' person.id day.id %}">{{day.weekday}} {{day.day}}</a></td>
+<td><a href="{% url 'personday' person.id day.id %}">{{day.all_hours|hours}}</a></td>
+<td><a href="{% url 'personday' person.id day.id %}">{{day.normal|hours}}</a></td>
+<td><a href="{% url 'personday' person.id day.id %}">{{day.overtime|hours}}</a></td>
+<td><a href="{% url 'personday' person.id day.id %}">{{day.doubletime|hours}}</a></td>
+<td><a href="{% url 'personday' person.id day.id %}">{{day.total|hours}}</td>
+</tr>
 {% endfor %}
-</div>
+</table>
 </div>
 {% endblock %}
