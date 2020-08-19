@@ -85,15 +85,18 @@ class Day(models.Model):
 
 
 ##############################################################################
+class IntervalChoices(models.TextChoices):
+    """ Types of Work Interval """
+    NORMAL = 'N', _('Working')
+    SICK = 'S', _('Sick Leave')
+    LEAVE = 'L', _('Paid Leave')
+    PUBLIC_HOLIDAY = 'P', _('Public Holiday')
+    STUDY = 'Z', _('Study Leave')
+
+
+##############################################################################
 class Interval(models.Model):
     """ Work Interval """
-    class IntervalChoices(models.TextChoices):
-        """ Types of Work Interval """
-        NORMAL = 'N', _('Working')
-        SICK = 'S', _('Sick Leave')
-        LEAVE = 'L', _('Paid Leave')
-        PUBLIC_HOLIDAY = 'P', _('Public Holiday')
-        STUDY = 'Z', _('Sudy Leave')
     day = models.ForeignKey(Day, on_delete=models.CASCADE)
     quarterhours = models.PositiveIntegerField()
     worktype = models.CharField(
@@ -101,6 +104,9 @@ class Interval(models.Model):
         choices=IntervalChoices.choices,
         default=IntervalChoices.NORMAL
     )
+
+    class Meta:
+        unique_together = ['day', 'worktype']
 
     def work(self):
         """ Return work type in human """

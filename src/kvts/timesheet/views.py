@@ -1,7 +1,7 @@
 """ Timesheet views """
 from django.shortcuts import render
 from .models import Person, Day, Interval, Fortnight
-from .forms import NormalHoursForm
+from .forms import NormalHoursForm, IntervalFormSet
 
 
 def index(request):
@@ -25,17 +25,45 @@ def personday_view(request, person_id, day_id):
     interval_list = Interval.objects.filter(day=day_id).order_by('day')
     person = Person.objects.get(pk=person_id)
     day = Day.objects.get(pk=day_id)
+    init_int = [{'worktype': _.worktype, 'hours': _.quarterhours / 4.0} for _ in interval_list]
 
     if request.method == 'POST':
-        form = NormalHoursForm(request.POST)
-        if form.is_valid():
-            hours = form.cleaned_data['norm']
+        hours_form = NormalHoursForm(request.POST)
+        if hours_form.is_valid():
+            hours = hours_form.cleaned_data['norm']
             day.normal_quarterhours = hours * 4
             day.save()
-    else:
-        form = NormalHoursForm(initial={'norm': day.normal_quarterhours / 4})
+        interval_form = IntervalFormSet(request.POST, initial=init_int)
+        if interval_form.is_valid():
+            for form in interval_form:
+                if form.has_changed():
+                    hours = form.cleaned_data['hours'] * 4
+                    worktype = form.cleaned_data['worktype']
+                    if hours == 0:
+                        oldint = Interval.objects.get(
+                            day=day_id,
+                            worktype=worktype
+                        )
+                        oldint.delete()
+                    else:
+                        newint = Interval(
+                            day=day,
+                            quarterhours=hours,
+                            worktype=worktype
+                        )
+                        newint.save()
 
-    context = {'person': person, 'day': day, 'intervals': interval_list, 'form': form}
+    else:
+        hours_form = NormalHoursForm(initial={'norm': day.normal_quarterhours / 4})
+        interval_form = IntervalFormSet(initial=init_int)
+
+    context = {
+        'person': person,
+        'day': day,
+        'intervals': interval_list,
+        'hours_form': hours_form,
+        'interval_form': interval_form
+    }
     return render(request, 'personday.template', context)
 
 # EOF
