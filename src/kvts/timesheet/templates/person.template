@@ -3,7 +3,6 @@
 {% load hours %}
 <h1> Days for {{person}} </h1>
 
-<a href="{% url 'newday' person.id %}">Add Date</a>
 <div class="container">
 <table class="table table-hover">
 <tr>
