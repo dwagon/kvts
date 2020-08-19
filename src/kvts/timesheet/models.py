@@ -35,11 +35,17 @@ class Day(models.Model):
 
     def overtime(self):
         """ Number of quarter hours at 1.5 (Max 3 hours) """
-        return min(12, self.all_hours() - self.normal_quarterhours)
+        if self.all_hours() - self.normal_quarterhours > 0:
+            return min(12, self.all_hours() - self.normal_quarterhours)
+        else:
+            return 0
 
     def doubletime(self):
         """ Number of quarter hours at 2.0 (Max 3 hours) """
-        return self.all_hours() - self.normal_quarterhours - self.overtime()
+        if self.all_hours() - self.normal_quarterhours - self.overtime() > 0:
+            return self.all_hours() - self.normal_quarterhours - self.overtime()
+        else:
+            return 0
 
     def normal(self):
         """ Return quarterhours at normal pay rate """
