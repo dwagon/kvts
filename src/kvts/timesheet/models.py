@@ -5,6 +5,15 @@ from django.utils.translation import gettext_lazy as _
 
 
 ##############################################################################
+class Fortnight(models.Model):
+    """ Period of timesheet """
+    start = models.DateField()
+
+    def __str__(self):
+        return str(self.start)
+
+
+##############################################################################
 class Person(models.Model):
     """ Person """
     name = models.CharField(max_length=50)

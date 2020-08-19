@@ -1,8 +1,11 @@
 """ Admin interface """
 from django.contrib import admin
-from .models import Person, Day, Interval
+from .models import Person, Day, Interval, Fortnight
 
-# Register your models here.
+admin.site.register(Fortnight)
 admin.site.register(Person)
 admin.site.register(Day)
 admin.site.register(Interval)
+
+
+# EOF
