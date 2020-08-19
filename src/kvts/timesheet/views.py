@@ -1,5 +1,4 @@
 """ Timesheet views """
-import datetime
 from django.shortcuts import render
 from .models import Person, Day, Interval, Fortnight
 from .forms import NormalHoursForm
@@ -14,7 +13,8 @@ def index(request):
 
 def person_view(request, person_id):
     """ Details about a person """
-    day_list = Day.objects.filter(person=person_id).order_by('day')
+    fort = Fortnight.objects.get(current=True)
+    day_list = Day.objects.filter(person=person_id, fortnight=fort).order_by('day')
     person = Person.objects.get(pk=person_id)
     context = {'person': person, 'days': day_list}
     return render(request, 'person.template', context)

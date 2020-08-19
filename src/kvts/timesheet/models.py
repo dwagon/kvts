@@ -25,7 +25,7 @@ class Fortnight(models.Model):
             day = self.start
             person_days = Day.objects.filter(person=person)
             for __ in range(14):
-                person_days.get_or_create(person=person, day=day)
+                person_days.get_or_create(person=person, day=day, fortnight=self)
                 day += datetime.timedelta(days=1)
 
 
@@ -44,6 +44,7 @@ class Day(models.Model):
     day = models.DateField()
     normal_quarterhours = models.PositiveIntegerField(default=0)
     person = models.ForeignKey(Person, on_delete=models.CASCADE, null=True)
+    fortnight = models.ForeignKey(Fortnight, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.person} @ {self.day}"
