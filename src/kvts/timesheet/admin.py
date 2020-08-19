@@ -7,5 +7,4 @@ admin.site.register(Person)
 admin.site.register(Day)
 admin.site.register(Interval)
 
-
 # EOF

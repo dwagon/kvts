@@ -1,5 +1,6 @@
 """ Model definition for KVTS """
 from decimal import Decimal
+import datetime
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -8,9 +9,24 @@ from django.utils.translation import gettext_lazy as _
 class Fortnight(models.Model):
     """ Period of timesheet """
     start = models.DateField()
+    current = models.BooleanField(default=False, unique=True)
 
     def __str__(self):
-        return str(self.start)
+        return f"Fortnight starting {str(self.start)} - current {self.current}"
+
+    def save(self, *args, **kwargs):    # pylint: disable=signature-differs
+        super().save(*args, **kwargs)
+        if self.current:
+            self.create_fortnight()
+
+    def create_fortnight(self):
+        """ Create blank dates for everyone """
+        for person in Person.objects.all():
+            day = self.start
+            person_days = Day.objects.filter(person=person)
+            for __ in range(14):
+                person_days.get_or_create(person=person, day=day)
+                day += datetime.timedelta(days=1)
 
 
 ##############################################################################
@@ -26,7 +42,7 @@ class Person(models.Model):
 class Day(models.Model):
     """ A Day """
     day = models.DateField()
-    normal_quarterhours = models.PositiveIntegerField()
+    normal_quarterhours = models.PositiveIntegerField(default=0)
     person = models.ForeignKey(Person, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
@@ -35,26 +51,24 @@ class Day(models.Model):
     def all_hours(self, typ_='N'):
         """ Calculate all hours allocated today """
         tots = 0
-        ivals = Interval.objects.filter(day=self)   # pylint: disable=no-member
+        ivals = Interval.objects.filter(day=self)
         if typ_:
             ivals = ivals.filter(worktype=typ_)
-        for iv in ivals:
-            tots += iv.quarterhours
+        for ivl in ivals:
+            tots += ivl.quarterhours
         return tots
 
     def overtime(self):
         """ Number of quarter hours at 1.5 (Max 3 hours) """
         if self.all_hours() - self.normal_quarterhours > 0:
             return min(12, self.all_hours() - self.normal_quarterhours)
-        else:
-            return 0
+        return 0
 
     def doubletime(self):
         """ Number of quarter hours at 2.0 (Max 3 hours) """
         if self.all_hours() - self.normal_quarterhours - self.overtime() > 0:
             return self.all_hours() - self.normal_quarterhours - self.overtime()
-        else:
-            return 0
+        return 0
 
     def normal(self):
         """ Return quarterhours at normal pay rate """
@@ -66,7 +80,7 @@ class Day(models.Model):
 
     def weekday(self):
         """ Return day of the week """
-        return self.day.strftime("%a")  # pylint: disable=no-member
+        return self.day.strftime("%a")
 
 
 ##############################################################################
@@ -89,7 +103,7 @@ class Interval(models.Model):
 
     def work(self):
         """ Return work type in human """
-        return self.get_worktype_display()  # pylint: disable=no-member
+        return self.get_worktype_display()
 
     def __str__(self):
         return f"{self.quarterhours/4} hours of {self.work()} on {self.day}"

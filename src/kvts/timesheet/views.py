@@ -1,6 +1,7 @@
 """ Timesheet views """
+import datetime
 from django.shortcuts import render
-from .models import Person, Day, Interval
+from .models import Person, Day, Interval, Fortnight
 from .forms import NormalHoursForm
 
 
