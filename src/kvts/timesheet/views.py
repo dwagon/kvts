@@ -1,4 +1,5 @@
 """ Timesheet views """
+# pylint: disable=relative-beyond-top-level
 from django.shortcuts import render
 from .models import Person, Day, Interval, Fortnight
 from .forms import NormalHoursForm, IntervalFormSet
@@ -52,6 +53,8 @@ def personday_view(request, person_id, day_id):
                             worktype=worktype
                         )
                         newint.save()
+        else:
+            print("Naught")
 
     else:
         hours_form = NormalHoursForm(initial={'norm': day.normal_quarterhours / 4})
