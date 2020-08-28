@@ -20,19 +20,25 @@
     </div>
     </div>
 
+    {{ interval_form.management_form }}
+    {% if interval_form.non_field_errors %}
+        <div class="container">
+            <div class="row">
+                Error: {{ interval_form.non_field_errors }}
+            </div>
+        </div>
+    {% endif %}
     {% for form in interval_form %}
         <div class="container">
         <div class="row">
-        {% for field in form %}
-            {{field.errors}}
-            <div class="col-sm-2">
-                <label class="control-label">{{field.label_tag}}</label>
-            </div>
-            <div class="col-sm-4">
-                {{field}}
-            </div>
-            <span class="help-block">{{field.help_text}}</span>
-        {% endfor %}
+        <div class="col">
+            {{form.hours.errors}}
+            {{form.worktype.errors}}
+            {{form.hours}}
+            {{form.worktype}}
+        </div>
+        <span class="help-block">{{field.help_text}}</span>
+
         </div>
         </div>
     {% endfor %}
