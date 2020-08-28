@@ -3,36 +3,50 @@
 <h1> Times for {{person}} on {{day.day}} </h1>
 {% load hours %}
 
-<div>
-<form action="{% url 'personday' person.id day.id %}" method="POST">
-{% csrf_token %}
-<table>
-<tr>
-    <td> {{ hours_form.as_table }} </td>
-</tr>
-<tr>
-    <td> {{ interval_form.management_form }} </td>
-</tr>
-{% for form in interval_form %}
-    {{ form.as_table }}
-{% endfor %}
-</table>
-<input type="submit" value="Change" class="btn btn-primary">
+<form role="form" class="form-inline" action="{% url 'personday' person.id day.id %}" method="POST">
+    {% csrf_token %}
+    <div class="container">
+    <div class="row">
+    {% for field in hours_form %}
+        {{field.errors}}
+        <div class="col-sm-2">
+            <label class="col control-label">{{field.label_tag}}</label>
+        </div>
+        <div class="col-sm-4">
+            {{field}}
+        </div>
+        <span class="help-block">{{field.help_text}}</span>
+    {% endfor %}
+    </div>
+    </div>
+
+    {% for form in interval_form %}
+        <div class="container">
+        <div class="row">
+        {% for field in form %}
+            {{field.errors}}
+            <div class="col-sm-2">
+                <label class="control-label">{{field.label_tag}}</label>
+            </div>
+            <div class="col-sm-4">
+                {{field}}
+            </div>
+            <span class="help-block">{{field.help_text}}</span>
+        {% endfor %}
+        </div>
+        </div>
+    {% endfor %}
+
+    <div class="container">
+        <div class="col-sm-offset-2 col-sm-4">
+            <input type="submit" value="Save" class="btn btn-primary">
+        </div>
+    </div>
 </form>
 </div>
 
-
-<div>
-<table class="table table-hover">
-<tr><th>Hours</th><th>Work Type</th></tr>
-{% for intr in intervals %}
-<tr><td>{{intr.work}}</td><td>{{intr.quarterhours|hours}}</td></tr>
-{% endfor %}
-<tr><th>Total</th><td>{{day.all_hours|hours}}</td></tr>
-</table>
-</div>
 <hr>
-<div>
+
 <table class="table table-hover">
 <tr><th>Normal</th><th>Overtime</th><th>Doubletime</th><th>Total</th></tr>
 <tr>
