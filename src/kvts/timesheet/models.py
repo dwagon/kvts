@@ -2,7 +2,6 @@
 from decimal import Decimal
 import datetime
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 
 ##############################################################################
@@ -42,38 +41,33 @@ class Person(models.Model):
 class Day(models.Model):
     """ A Day """
     day = models.DateField()
-    normal_quarterhours = models.PositiveIntegerField(default=0)
+    normal_qh = models.PositiveIntegerField(default=8*4)
     person = models.ForeignKey(Person, on_delete=models.CASCADE, null=True)
     fortnight = models.ForeignKey(Fortnight, on_delete=models.CASCADE)
+    worked_qh = models.PositiveIntegerField(default=0)
+    sick_qh = models.PositiveIntegerField(default=0)
+    leave_qh = models.PositiveIntegerField(default=0)
+    publich_qh = models.PositiveIntegerField(default=0)
+    study_qh = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f"{self.person} @ {self.day}"
 
-    def all_hours(self, typ_='N'):
-        """ Calculate all hours allocated today """
-        tots = 0
-        ivals = Interval.objects.filter(day=self)
-        if typ_:
-            ivals = ivals.filter(worktype=typ_)
-        for ivl in ivals:
-            tots += ivl.quarterhours
-        return tots
-
     def overtime(self):
         """ Number of quarter hours at 1.5 (Max 3 hours) """
-        if self.all_hours() - self.normal_quarterhours > 0:
-            return min(12, self.all_hours() - self.normal_quarterhours)
+        if self.worked_qh - self.normal_qh > 0:
+            return min(12, self.worked_qh - self.normal_qh)
         return 0
 
     def doubletime(self):
         """ Number of quarter hours at 2.0 (Max 3 hours) """
-        if self.all_hours() - self.normal_quarterhours - self.overtime() > 0:
-            return self.all_hours() - self.normal_quarterhours - self.overtime()
+        if self.worked_qh - self.normal_qh - self.overtime() > 0:
+            return self.worked_qh - self.normal_qh - self.overtime()
         return 0
 
     def normal(self):
         """ Return quarterhours at normal pay rate """
-        return min(self.all_hours(), self.normal_quarterhours)
+        return min(self.worked_qh, self.normal_qh)
 
     def total(self):
         """ Return the equivalent hours to be paid """
@@ -82,42 +76,5 @@ class Day(models.Model):
     def weekday(self):
         """ Return day of the week """
         return self.day.strftime("%a")
-
-
-##############################################################################
-class IntervalChoices(models.TextChoices):
-    """ Types of Work Interval """
-    NORMAL = 'N', _('Working')
-    SICK = 'S', _('Sick Leave')
-    LEAVE = 'L', _('Paid Leave')
-    PUBLIC_HOLIDAY = 'P', _('Public Holiday')
-    STUDY = 'Z', _('Study Leave')
-
-
-##############################################################################
-class Interval(models.Model):
-    """ Work Interval """
-    day = models.ForeignKey(Day, on_delete=models.CASCADE)
-    quarterhours = models.PositiveIntegerField()
-    worktype = models.CharField(
-        max_length=1,
-        choices=IntervalChoices.choices,
-        default=IntervalChoices.NORMAL
-    )
-
-    class Meta:
-        unique_together = ['day', 'worktype']
-
-    def work(self):
-        """ Return work type in human """
-        return self.get_worktype_display()
-
-    def __str__(self):
-        return f"{self.quarterhours/4} hours of {self.work()} on {self.day}"
-
-    def hours(self):
-        """ Return quarterhours in human """
-        return self.quarterhours / 4.0
-
 
 # EOF

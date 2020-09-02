@@ -2,25 +2,13 @@
 {% block content %}
 <h1> Times for <a href="{% url 'person' person.id %}">{{person}}</a> on {{day.day}} </h1>
 {% load hours %}
+
 <form action="{% url 'personday' person.id day.id %}" method="POST">
-    {% csrf_token %}
-    {{ hours_form.as_p }}
-    {{ interval_form.non_form_errors }}
-    {{ interval_form.as_p }}
-
-    <input type="submit" value="Save" class="btn btn-primary">
-</form>
-</div>
-
-<hr>
-
+{% csrf_token %}
 <table class="table table-hover">
-<tr><th>Normal</th><th>Overtime</th><th>Doubletime</th><th>Total</th></tr>
-<tr>
-    <td>{{day.normal|hours}}</td>
-    <td>{{day.overtime|hours}}</td>
-    <td>{{day.doubletime|hours}}</td>
-    <td>{{day.total|hours}}</td>
+{{form.as_table}}
 </table>
 </div>
+    <input type="submit" value="Save" class="btn btn-primary">
+</form>
 {% endblock %}
