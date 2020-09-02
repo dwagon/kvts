@@ -17,7 +17,7 @@ class NormalHoursForm(forms.Form):
 class IntervalForm(forms.Form):
     """ Enter interval data """
     worktype = forms.ChoiceField(choices=IntervalChoices.choices)
-    hours = forms.DecimalField(min_value=0.0, max_value=24.0)
+    hours = forms.DecimalField(min_value=0.0, max_value=24.0, decimal_places=1)
 
     def clean_hours(self):
         """ Ensure hours is a reasonable number """
@@ -40,6 +40,6 @@ class BaseIntervalFormSet(forms.BaseFormSet):
 
 
 ##############################################################################
-IntervalFormSet = formset_factory(IntervalForm, BaseIntervalFormSet)
+IntervalFormSet = formset_factory(IntervalForm, BaseIntervalFormSet, extra=1)
 
 # EOF

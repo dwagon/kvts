@@ -1,53 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-<h1> Times for {{person}} on {{day.day}} </h1>
+<h1> Times for <a href="{% url 'person' person.id %}">{{person}}</a> on {{day.day}} </h1>
 {% load hours %}
-
-<form role="form" class="form-inline" action="{% url 'personday' person.id day.id %}" method="POST">
+<form action="{% url 'personday' person.id day.id %}" method="POST">
     {% csrf_token %}
-    <div class="container">
-    <div class="row">
-    {% for field in hours_form %}
-        {{field.errors}}
-        <div class="col-sm-2">
-            <label class="col control-label">{{field.label_tag}}</label>
-        </div>
-        <div class="col-sm-4">
-            {{field}}
-        </div>
-        <span class="help-block">{{field.help_text}}</span>
-    {% endfor %}
-    </div>
-    </div>
+    {{ hours_form.as_p }}
+    {{ interval_form.non_form_errors }}
+    {{ interval_form.as_p }}
 
-    {{ interval_form.management_form }}
-    {% if interval_form.non_field_errors %}
-        <div class="container">
-            <div class="row">
-                Error: {{ interval_form.non_field_errors }}
-            </div>
-        </div>
-    {% endif %}
-    {% for form in interval_form %}
-        <div class="container">
-        <div class="row">
-        <div class="col">
-            {{form.hours.errors}}
-            {{form.worktype.errors}}
-            {{form.hours}}
-            {{form.worktype}}
-        </div>
-        <span class="help-block">{{field.help_text}}</span>
-
-        </div>
-        </div>
-    {% endfor %}
-
-    <div class="container">
-        <div class="col-sm-offset-2 col-sm-4">
-            <input type="submit" value="Save" class="btn btn-primary">
-        </div>
-    </div>
+    <input type="submit" value="Save" class="btn btn-primary">
 </form>
 </div>
 
