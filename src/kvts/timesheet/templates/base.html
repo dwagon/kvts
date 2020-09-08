@@ -10,9 +10,14 @@
 {% load bootstrap4 %}
 {% bootstrap_css %}
 {% bootstrap_jquery jquery='full' %}
+{% load django_bootstrap_breadcrumbs %}
 </head>
 
 <body>
+{% block breadcrumbs %}
+{% clear_breadcrumbs %}
+{% endblock %}
+
 {% block content %}
 ContentBlock
 {% endblock %}

@@ -1,5 +1,14 @@
 {% extends "base.html" %}
+{% load django_bootstrap_breadcrumbs %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+{% breadcrumb_safe "<i class='icon-home'></i>Home" "index" %}
+{% breadcrumb person.name "person" person_id=person.id %}
+{% endblock %}
+
 {% block content %}
+{% render_breadcrumbs %}
 {% load hours %}
 <h1> Days for {{person}} </h1>
 

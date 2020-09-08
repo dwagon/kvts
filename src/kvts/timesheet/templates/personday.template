@@ -1,6 +1,16 @@
 {% extends "base.html" %}
+{% load django_bootstrap_breadcrumbs %}
+
+{% block breadcrumbs %}
+{{ block.super }}
+{% breadcrumb_safe "<i class='icon-home'></i>Home" "index" %}
+{% breadcrumb person.name "person" person_id=person.id %}
+{% breadcrumb day.day "personday" person_id=person.id day_id=day.id %}
+{% endblock %}
+
 {% block content %}
-<h1> Times for <a href="{% url 'person' person.id %}">{{person}}</a> on {{day.day}} </h1>
+{% render_breadcrumbs %}
+<h1> Times for {{person}} on {{day.day}} </h1>
 {% load hours %}
 
 <form action="{% url 'personday' person.id day.id %}" method="POST">

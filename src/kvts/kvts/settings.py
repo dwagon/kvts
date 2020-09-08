@@ -35,6 +35,7 @@ INTERNAL_IPS = [
 INSTALLED_APPS = [
     'timesheet',
     'bootstrap4',
+    'django_bootstrap_breadcrumbs',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -105,6 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+BREADCRUMBS_TEMPLATE = "django_bootstrap_breadcrumbs/bootstrap4.html"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
