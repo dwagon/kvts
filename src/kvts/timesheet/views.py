@@ -1,5 +1,6 @@
 """ Timesheet views """
 # pylint: disable=relative-beyond-top-level
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .models import Person, Day, Fortnight
 from .forms import DayForm
@@ -14,6 +15,7 @@ def index(request):
 
 
 ##############################################################################
+@login_required
 def person_view(request, person_id):
     """ Details about a person """
     fort = Fortnight.objects.get(current=True)
@@ -39,6 +41,7 @@ def handle_day_form(request, day):
 
 
 ##############################################################################
+@login_required
 def personday_view(request, person_id, day_id):
     """ Details about a day for a particular person"""
     person = Person.objects.get(pk=person_id)

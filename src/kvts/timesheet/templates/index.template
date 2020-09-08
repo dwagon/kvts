@@ -9,6 +9,7 @@
 {% block content %}
 {% render_breadcrumbs %}
 <h1>Timesheets</h1>
+{% if user.is_authenticated %}
 <div class="container">
   <div class="list-group">
 {% for person in people %}
@@ -16,4 +17,7 @@
 {% endfor %}
   </div>
 </div>
+{% else %}
+<a href="{% url 'login' %}" class="nav-link">Please Login</a>
+{% endif %}
 {% endblock %}
