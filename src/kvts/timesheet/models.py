@@ -2,6 +2,7 @@
 from decimal import Decimal
 import datetime
 from django.db import models
+from django.contrib.auth.models import User     # pylint: disable=imported-auth-user
 
 
 ##############################################################################
@@ -20,7 +21,7 @@ class Fortnight(models.Model):
 
     def create_fortnight(self):
         """ Create blank dates for everyone """
-        for person in Person.objects.all():
+        for person in User.objects.all():
             day = self.start
             person_days = Day.objects.filter(person=person)
             for __ in range(14):
@@ -29,20 +30,11 @@ class Fortnight(models.Model):
 
 
 ##############################################################################
-class Person(models.Model):
-    """ Person """
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return str(self.name)
-
-
-##############################################################################
 class Day(models.Model):
     """ A Day """
     day = models.DateField()
     normal_qh = models.PositiveIntegerField(default=8*4)
-    person = models.ForeignKey(Person, on_delete=models.CASCADE, null=True)
+    person = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     fortnight = models.ForeignKey(Fortnight, on_delete=models.CASCADE)
     worked_qh = models.PositiveIntegerField(default=0)
     sick_qh = models.PositiveIntegerField(default=0)

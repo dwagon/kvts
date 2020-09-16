@@ -2,14 +2,20 @@
 # pylint: disable=relative-beyond-top-level
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from .models import Person, Day, Fortnight
+from django.contrib.auth.models import User     # pylint: disable=imported-auth-user
+from .models import Day, Fortnight
 from .forms import DayForm
 
 
 ##############################################################################
+@login_required
 def index(request):
     """ Front Page """
-    people_list = Person.objects.all()
+    print(f"user={request.user}")
+    if request.user.is_superuser:
+        people_list = User.objects.all()
+    else:
+        people_list = User.objects.get(name=request.user)
     context = {'people': people_list}
     return render(request, 'index.template', context)
 
@@ -20,7 +26,7 @@ def person_view(request, person_id):
     """ Details about a person """
     fort = Fortnight.objects.get(current=True)
     day_list = Day.objects.filter(person=person_id, fortnight=fort).order_by('day')
-    person = Person.objects.get(pk=person_id)
+    person = User.objects.get(pk=person_id)
     context = {'person': person, 'days': day_list}
     return render(request, 'person.template', context)
 
@@ -44,7 +50,7 @@ def handle_day_form(request, day):
 @login_required
 def personday_view(request, person_id, day_id):
     """ Details about a day for a particular person"""
-    person = Person.objects.get(pk=person_id)
+    person = User.objects.get(pk=person_id)
     day = Day.objects.get(pk=day_id)
 
     if request.method == 'POST':

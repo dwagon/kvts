@@ -4,7 +4,7 @@
 {% block breadcrumbs %}
 {{ block.super }}
 {% breadcrumb_safe "<i class='icon-home'></i>Home" "index" %}
-{% breadcrumb person.name "person" person_id=person.id %}
+{% breadcrumb person.username "person" person_id=person.id %}
 {% endblock %}
 
 {% block content %}
