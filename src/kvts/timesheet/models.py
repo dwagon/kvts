@@ -17,16 +17,20 @@ class Fortnight(models.Model):
     def save(self, *args, **kwargs):    # pylint: disable=signature-differs
         super().save(*args, **kwargs)
         if self.current:
-            self.create_fortnight()
+            self.create_all_fortnight()
 
-    def create_fortnight(self):
+    def create_person_fortnight(self, user):
+        """ Create blank dates for a user """
+        day = self.start
+        person_days = Day.objects.filter(person=user)
+        for __ in range(14):
+            person_days.get_or_create(person=user, day=day, fortnight=self)
+            day += datetime.timedelta(days=1)
+
+    def create_all_fortnight(self):
         """ Create blank dates for everyone """
         for person in User.objects.all():
-            day = self.start
-            person_days = Day.objects.filter(person=person)
-            for __ in range(14):
-                person_days.get_or_create(person=person, day=day, fortnight=self)
-                day += datetime.timedelta(days=1)
+            self.create_person_fortnight(person)
 
 
 ##############################################################################

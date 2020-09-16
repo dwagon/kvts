@@ -15,7 +15,7 @@ def index(request):
     if request.user.is_superuser:
         people_list = User.objects.all()
     else:
-        people_list = User.objects.get(name=request.user)
+        people_list = [User.objects.get(username=request.user)]
     context = {'people': people_list}
     return render(request, 'index.template', context)
 
@@ -27,6 +27,8 @@ def person_view(request, person_id):
     fort = Fortnight.objects.get(current=True)
     day_list = Day.objects.filter(person=person_id, fortnight=fort).order_by('day')
     person = User.objects.get(pk=person_id)
+    if not day_list:
+        fort.create_person_fortnight(person)
     context = {'person': person, 'days': day_list}
     return render(request, 'person.template', context)
 
