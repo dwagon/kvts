@@ -10,6 +10,7 @@ class Fortnight(models.Model):
     """ Period of timesheet """
     start = models.DateField()
     current = models.BooleanField(default=False, unique=True)
+    notes = models.TextField(default='')
 
     def __str__(self):
         return f"Fortnight starting {str(self.start)} - current {self.current}"
@@ -32,6 +33,10 @@ class Fortnight(models.Model):
         for person in User.objects.all():
             self.create_person_fortnight(person)
 
+    def end(self):
+        """ Return the end day of the fortnight """
+        return self.start + datetime.timedelta(days=13)     # 0-13 == 14
+
 
 ##############################################################################
 class Day(models.Model):
@@ -45,6 +50,7 @@ class Day(models.Model):
     leave_qh = models.PositiveIntegerField(default=0)
     publich_qh = models.PositiveIntegerField(default=0)
     study_qh = models.PositiveIntegerField(default=0)
+    notes = models.TextField(default='')
 
     def __str__(self):
         return f"{self.person} @ {self.day}"

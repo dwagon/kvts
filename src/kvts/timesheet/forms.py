@@ -5,6 +5,12 @@ from django import forms
 
 
 ##############################################################################
+class FortnightForm(forms.Form):
+    """ Forms handling for the Fortnight model """
+    notes = forms.CharField(widget=forms.Textarea)
+
+
+##############################################################################
 class DayForm(forms.Form):
     """ Form handling the details of a day """
     normal = forms.DecimalField(
@@ -37,5 +43,6 @@ class DayForm(forms.Form):
         min_value=0,
         decimal_places=1, required=False
     )
+    notes = forms.CharField(widget=forms.Textarea)
 
 # EOF

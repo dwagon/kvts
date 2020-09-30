@@ -10,7 +10,8 @@
 {% block content %}
 {% render_breadcrumbs %}
 {% load hours %}
-<h1> Days for {{person}} </h1>
+<h1> Timesheet for {{ person }} </h1>
+<h2> From {{ fortnight.start }} to {{ fortnight.end }}</h2>
 
 <div class="container">
 <table class="table table-hover">
@@ -23,6 +24,7 @@
     <th>Total</th>
     <th> &nbsp; </th>
     <th>(Public|Leave|Sick|Study)</th>
+    <th>Notes</th>
 </tr>
 {% for day in days %}
 <tr>
@@ -44,8 +46,24 @@
     <a href="{% url 'personday' person.id day.id %}">{{day.study_qh|hours}}</a>
 )
 </td>
+<td>
+{% if day.notes %}
+<a href="{% url 'personday' person.id day.id %}">Note</a>
+{% endif %}
+</td>
 </tr>
 {% endfor %}
 </table>
+</div>
+
+<div class="container">
+<form action="{% url 'person' person.id %}" method="POST">
+{% csrf_token %}
+<table class="table table-hover">
+{{form.as_p}}
+</table>
+</div>
+    <input type="submit" value="Save" class="btn btn-primary">
+</form>
 </div>
 {% endblock %}

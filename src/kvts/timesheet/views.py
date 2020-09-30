@@ -4,14 +4,13 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User     # pylint: disable=imported-auth-user
 from .models import Day, Fortnight
-from .forms import DayForm
+from .forms import DayForm, FortnightForm
 
 
 ##############################################################################
 @login_required
 def index(request):
     """ Front Page """
-    print(f"user={request.user}")
     if request.user.is_superuser:
         people_list = User.objects.all()
     else:
@@ -25,11 +24,19 @@ def index(request):
 def person_view(request, person_id):
     """ Details about a person """
     fort = Fortnight.objects.get(current=True)
+    if request.method == 'POST':
+        form = FortnightForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            fort.notes = data['notes']
+            fort.save()
+
     day_list = Day.objects.filter(person=person_id, fortnight=fort).order_by('day')
     person = User.objects.get(pk=person_id)
     if not day_list:
         fort.create_person_fortnight(person)
-    context = {'person': person, 'days': day_list}
+    form = FortnightForm(initial={'notes': fort.notes})
+    context = {'person': person, 'days': day_list, 'fortnight': fort, 'form': form}
     return render(request, 'person.template', context)
 
 
@@ -45,6 +52,7 @@ def handle_day_form(request, day):
         day.leave_qh = 4 * data['leave'] if data['leave'] else 0
         day.publich_qh = 4 * data['public'] if data['public'] else 0
         day.study_qh = 4 * data['study'] if data['study'] else 0
+        day.notes = data['notes']
         day.save()
 
 
@@ -66,6 +74,7 @@ def personday_view(request, person_id, day_id):
             'leave': day.leave_qh / 4,
             'public': day.publich_qh / 4,
             'study': day.study_qh / 4,
+            'notes': day.notes,
             }
         )
 
