@@ -6,6 +6,22 @@ from django.contrib.auth.models import User     # pylint: disable=imported-auth-
 
 
 ##############################################################################
+class Employee(models.Model):
+    """ Details about each employee """
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    is_vet = models.BooleanField(default=False)
+    is_nurse = models.BooleanField(default=True)
+    is_admin = models.BooleanField(default=False)
+
+    def __str__(self):
+        vet = "vet" if self.is_vet else ""
+        nurse = "nurse" if self.is_nurse else ""
+        admin = "admin" if self.is_admin else ""
+        roles = f"{vet} {nurse} {admin}".strip()
+        return f"{self.user.username} ({roles})"
+
+
+##############################################################################
 class Fortnight(models.Model):
     """ Period of timesheet """
     start = models.DateField()
@@ -30,7 +46,7 @@ class Fortnight(models.Model):
 
     def create_all_fortnight(self):
         """ Create blank dates for everyone """
-        for person in User.objects.all():
+        for person in Employee.objects.all():
             self.create_person_fortnight(person)
 
     def end(self):
@@ -43,7 +59,7 @@ class Day(models.Model):
     """ A Day """
     day = models.DateField()
     normal_qh = models.PositiveIntegerField(default=8*4)
-    person = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    person = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True)
     fortnight = models.ForeignKey(Fortnight, on_delete=models.CASCADE)
     worked_qh = models.PositiveIntegerField(default=0)
     sick_qh = models.PositiveIntegerField(default=0)

@@ -43,7 +43,11 @@
     <a href="{% url 'personday' person.id day.id %}">{{day.publich_qh|hours}}</a> |
     <a href="{% url 'personday' person.id day.id %}">{{day.leave_qh|hours}}</a> |
     <a href="{% url 'personday' person.id day.id %}">{{day.sick_qh|hours}}</a> |
+    {% if person.is_vet %}
     <a href="{% url 'personday' person.id day.id %}">{{day.study_qh|hours}}</a>
+    {% else %}
+    -
+    {% endif %}
 )
 </td>
 <td>

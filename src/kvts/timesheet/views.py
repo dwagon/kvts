@@ -2,9 +2,8 @@
 # pylint: disable=relative-beyond-top-level
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User     # pylint: disable=imported-auth-user
-from .models import Day, Fortnight
-from .forms import DayForm, FortnightForm
+from .models import Day, Fortnight, Employee
+from .forms import NurseDayForm, VetDayForm, FortnightForm
 
 
 ##############################################################################
@@ -12,9 +11,9 @@ from .forms import DayForm, FortnightForm
 def index(request):
     """ Front Page """
     if request.user.is_superuser:
-        people_list = User.objects.all()
+        people_list = Employee.objects.all()
     else:
-        people_list = [User.objects.get(username=request.user)]
+        people_list = [Employee.objects.get(username=request.user)]
     context = {'people': people_list}
     return render(request, 'index.template', context)
 
@@ -32,7 +31,7 @@ def person_view(request, person_id):
             fort.save()
 
     day_list = Day.objects.filter(person=person_id, fortnight=fort).order_by('day')
-    person = User.objects.get(pk=person_id)
+    person = Employee.objects.get(pk=person_id)
     if not day_list:
         fort.create_person_fortnight(person)
     form = FortnightForm(initial={'notes': fort.notes})
@@ -41,9 +40,12 @@ def person_view(request, person_id):
 
 
 ##############################################################################
-def handle_day_form(request, day):
+def handle_day_form(request, day, person):
     """ Handle the day form """
-    form = DayForm(request.POST)
+    if person.is_vet:
+        form = VetDayForm(request.POST)
+    else:
+        form = NurseDayForm(request.POST)
     if form.is_valid():
         data = form.cleaned_data
         day.normal_qh = 4 * data['normal'] if data['normal'] else 0
@@ -51,7 +53,10 @@ def handle_day_form(request, day):
         day.sick_qh = 4 * data['sick'] if data['sick'] else 0
         day.leave_qh = 4 * data['leave'] if data['leave'] else 0
         day.publich_qh = 4 * data['public'] if data['public'] else 0
-        day.study_qh = 4 * data['study'] if data['study'] else 0
+        if person.is_vet:
+            day.study_qh = 4 * data['study'] if data['study'] else 0
+        else:
+            day.dtudy_qh = 0
         day.notes = data['notes']
         day.save()
 
@@ -60,23 +65,26 @@ def handle_day_form(request, day):
 @login_required
 def personday_view(request, person_id, day_id):
     """ Details about a day for a particular person"""
-    person = User.objects.get(pk=person_id)
+    person = Employee.objects.get(pk=person_id)
     day = Day.objects.get(pk=day_id)
+    initial = {
+        'normal': day.normal_qh / 4,
+        'worked': day.worked_qh / 4,
+        'sick': day.sick_qh / 4,
+        'leave': day.leave_qh / 4,
+        'public': day.publich_qh / 4,
+        'notes': day.notes,
+        }
+    if person.is_vet:
+        use_form = VetDayForm
+        initial['study'] = day.study_qh / 4
+    else:
+        use_form = NurseDayForm
 
     if request.method == 'POST':
-        handle_day_form(request, day)
+        handle_day_form(request, day, person)
         return redirect('person', person_id=person_id)
-    form = DayForm(
-        initial={
-            'normal': day.normal_qh / 4,
-            'worked': day.worked_qh / 4,
-            'sick': day.sick_qh / 4,
-            'leave': day.leave_qh / 4,
-            'public': day.publich_qh / 4,
-            'study': day.study_qh / 4,
-            'notes': day.notes,
-            }
-        )
+    form = use_form(initial=initial)
 
     context = {
         'person': person,
