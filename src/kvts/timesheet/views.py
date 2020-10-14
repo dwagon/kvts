@@ -2,7 +2,7 @@
 # pylint: disable=relative-beyond-top-level
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from .models import Day, Fortnight, Employee
+from .models import Day, Fortnight, Employee, EmployeeFortnight
 from .forms import NurseDayForm, VetDayForm, FortnightForm
 
 
@@ -23,19 +23,28 @@ def index(request):
 def person_view(request, person_id):
     """ Details about a person """
     fort = Fortnight.objects.get(current=True)
+    person = Employee.objects.get(pk=person_id)
+    userfort, _ = EmployeeFortnight.objects.get_or_create(
+        person=person, notes='', fortnight=fort
+        )
     if request.method == 'POST':
         form = FortnightForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            fort.notes = data['notes']
-            fort.save()
+            userfort.notes = data['notes']
+            userfort.save()
 
     day_list = Day.objects.filter(person=person_id, fortnight=fort).order_by('day')
-    person = Employee.objects.get(pk=person_id)
     if not day_list:
         fort.create_person_fortnight(person)
-    form = FortnightForm(initial={'notes': fort.notes})
-    context = {'person': person, 'days': day_list, 'fortnight': fort, 'form': form}
+    form = FortnightForm(initial={'notes': userfort.notes})
+    context = {
+        'person': person,
+        'days': day_list,
+        'fortnight': fort,
+        'form': form,
+        'userfort': userfort
+    }
     return render(request, 'person.template', context)
 
 

@@ -26,7 +26,7 @@ class Fortnight(models.Model):
     """ Period of timesheet """
     start = models.DateField()
     current = models.BooleanField(default=False, unique=True)
-    notes = models.TextField(default='')
+    notes = models.TextField(default='', blank=True)
 
     def __str__(self):
         return f"Fortnight starting {str(self.start)} - current {self.current}"
@@ -94,5 +94,13 @@ class Day(models.Model):
     def weekday(self):
         """ Return day of the week """
         return self.day.strftime("%a")
+
+
+##############################################################################
+class EmployeeFortnight(models.Model):
+    """ Details about a employee per fortnight """
+    person = models.ForeignKey(Employee, on_delete=models.CASCADE, null=True)
+    notes = models.TextField(default='', blank=True)
+    fortnight = models.ForeignKey(Fortnight, on_delete=models.CASCADE)
 
 # EOF

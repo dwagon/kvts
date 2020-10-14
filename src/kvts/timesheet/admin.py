@@ -2,11 +2,12 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
-from .models import Day, Fortnight, Employee
+from .models import Day, Fortnight, Employee, EmployeeFortnight
 
 admin.site.register(Fortnight)
 admin.site.register(Day)
 admin.site.register(Employee)
+admin.site.register(EmployeeFortnight)
 
 
 class EmployeeInline(admin.StackedInline):
