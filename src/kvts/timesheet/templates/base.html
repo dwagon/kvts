@@ -9,6 +9,7 @@
 <title>Timesheets</title>
 {% load bootstrap4 %}
 {% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
 {% bootstrap_jquery jquery='full' %}
 {% load django_bootstrap_breadcrumbs %}
 </head>
@@ -23,7 +24,15 @@
 <ul class="navbar-nav">
     <li class="nav-item"> <a href="https://www.kensingtonvet.com.au/" class="nav-link">Kensington Vet Clinic</a></li>
     <li><span class="navbar-text">Timesheeting System</span></li>
-    <li class="nav-item"> <a href="/TODO" class="nav-link">Help</a></li>
+    {% if person.is_admin %}
+        <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown"> Admin </a>
+      <div class="dropdown-menu">
+          <a class="dropdown-item" href="{% url 'manage_fortnights' %}">Manage Fortnights</a>
+          <a class="dropdown-item" href="{% url 'manage_users' %}">Manage Users</a>
+      </div>
+    {% endif %}
+    <li class="nav-item"> <a href="/TODO" class="nav-link disabled">Help</a></li>
 {% if user.is_authenticated %}
     <a href="{% url 'logout' %}" class="nav-link">Logout {{user}}</a>
 {% else %}
