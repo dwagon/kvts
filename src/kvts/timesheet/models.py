@@ -25,7 +25,7 @@ class Employee(models.Model):
 class Fortnight(models.Model):
     """ Period of timesheet """
     start = models.DateField()
-    current = models.BooleanField(default=False, unique=True)
+    current = models.BooleanField(default=False)
     notes = models.TextField(default='', blank=True)
 
     def __str__(self):
@@ -52,6 +52,14 @@ class Fortnight(models.Model):
     def end(self):
         """ Return the end day of the fortnight """
         return self.start + datetime.timedelta(days=13)     # 0-13 == 14
+
+    def make_current(self):
+        """ Make the fortnight current """
+        for fnight in Fortnight.objects.filter(current=True):
+            fnight.current = False
+            fnight.save()
+        self.current = True
+        self.save()
 
 
 ##############################################################################

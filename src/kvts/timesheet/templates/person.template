@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% load django_bootstrap_breadcrumbs %}
 
 {% block breadcrumbs %}
+{% load django_bootstrap_breadcrumbs %}
 {{ block.super }}
 {% breadcrumb_safe "<i class='icon-home'></i>Home" "index" %}
 {% breadcrumb user.username "person" person_id=person.id %}

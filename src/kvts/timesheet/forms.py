@@ -2,11 +2,21 @@
 # pylint: disable=relative-beyond-top-level
 
 from django import forms
+from django.forms import ModelForm
+from .models import Fortnight
+
+
+##############################################################################
+class ManageFortnightForm(ModelForm):
+    """ Forms handling for the Fortnight model """
+    class Meta:
+        model = Fortnight
+        fields = ['start', 'current', 'notes']
 
 
 ##############################################################################
 class FortnightForm(forms.Form):
-    """ Forms handling for the Fortnight model """
+    """ Forms handling for the UserFortnight model """
     notes = forms.CharField(widget=forms.Textarea)
 
 

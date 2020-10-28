@@ -10,11 +10,15 @@ from .forms import NurseDayForm, VetDayForm, FortnightForm
 @login_required
 def index(request):
     """ Front Page """
+    person = Employee.objects.get(pk=request.user.id)
     if request.user.is_superuser:
         people_list = Employee.objects.all()
     else:
         people_list = [Employee.objects.get(username=request.user)]
-    context = {'people': people_list}
+    context = {
+        'people': people_list,
+        'person': person,
+        }
     return render(request, 'index.template', context)
 
 

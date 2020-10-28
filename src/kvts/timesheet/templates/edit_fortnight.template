@@ -4,16 +4,14 @@
 {% load django_bootstrap_breadcrumbs %}
 {{ block.super }}
 {% breadcrumb_safe "<i class='icon-home'></i>Home" "index" %}
-{% breadcrumb user.username "person" person_id=person.id %}
-{% breadcrumb day.day "personday" person_id=person.id day_id=day.id %}
+{% breadcrumb_safe "Manage" "manage_index" %}
 {% endblock %}
 
 {% block content %}
 {% render_breadcrumbs %}
-<h1> Times for {{person}} on {{day.day}} </h1>
-{% load hours %}
+<h1> Edit Fortnight {{fort}} </h1>
 
-<form action="{% url 'personday' person.id day.id %}" method="POST">
+<form action="{% url 'edit_fortnight' fort.id %}" method="POST">
 {% csrf_token %}
 <table class="table table-hover">
 {{form.as_table}}
